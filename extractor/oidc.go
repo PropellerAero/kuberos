@@ -69,13 +69,13 @@ func EmailDomain(domain string) Option {
 }
 
 // NewOIDC creates a new OIDC extractor.
-func NewOIDC(v *oidc.IDTokenVerifier, oo ...Option) (OIDC, error) {
+func NewOIDC(v *oidc.IDTokenVerifier, emailDomain string, oo ...Option) (OIDC, error) {
 	l, err := zap.NewProduction()
 	if err != nil {
 		return nil, errors.Wrap(err, "cannot create default logger")
 	}
 
-	oe := &oidcExtractor{log: l, v: v, h: http.DefaultClient}
+	oe := &oidcExtractor{log: l, v: v, h: http.DefaultClient, emailDomain: emailDomain}
 
 	for _, o := range oo {
 		if err := o(oe); err != nil {
