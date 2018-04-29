@@ -35,9 +35,9 @@ type OIDC interface {
 }
 
 type oidcExtractor struct {
-	log 		*zap.Logger
-	v   		*oidc.IDTokenVerifier
-	h   		*http.Client
+	log         *zap.Logger
+	v           *oidc.IDTokenVerifier
+	h           *http.Client
 	emailDomain string
 }
 
@@ -60,14 +60,22 @@ func Logger(l *zap.Logger) Option {
 	}
 }
 
+// EmailDomain adds the given email domain to an OIDC extractor
+func EmailDomain(domain string) Option {
+	return func(o *oidcExtractor) error {
+		o.emailDomain = domain
+		return nil
+	}
+}
+
 // NewOIDC creates a new OIDC extractor.
-func NewOIDC(v *oidc.IDTokenVerifier, emailDomain string, oo ...Option) (OIDC, error) {
+func NewOIDC(v *oidc.IDTokenVerifier, oo ...Option) (OIDC, error) {
 	l, err := zap.NewProduction()
 	if err != nil {
 		return nil, errors.Wrap(err, "cannot create default logger")
 	}
 
-	oe := &oidcExtractor{log: l, v: v, h: http.DefaultClient, emailDomain: emailDomain}
+	oe := &oidcExtractor{log: l, v: v, h: http.DefaultClient}
 
 	for _, o := range oo {
 		if err := o(oe); err != nil {
@@ -107,7 +115,7 @@ func (o *oidcExtractor) Process(ctx context.Context, cfg *oauth2.Config, code st
 		return nil, errors.Wrap(err, "cannot extract claims from ID token")
 	}
 
-	if o.emailDomain != "" && !strings.HasSuffix(params.Username, "@" + o.emailDomain) {
+	if o.emailDomain != "" && !strings.HasSuffix(params.Username, "@"+o.emailDomain) {
 		return nil, errors.New("Invalid email domain, expecting " + o.emailDomain)
 	}
 

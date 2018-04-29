@@ -73,7 +73,7 @@ Flags:
       --shutdown-grace-period=1m
                          Wait this long for sessions to end before shutting down.
       --email-domain=EMAIL-DOMAIN
-                         The eamil domain to restrict access to.
+                         The email domain to restrict access to.
 
 Args:
   [<oidc-issuer-url>]     OpenID Connect issuer URL.

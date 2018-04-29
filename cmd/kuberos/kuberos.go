@@ -82,7 +82,7 @@ func main() {
 		Endpoint:     provider.Endpoint(),
 		Scopes:       sr.Get(),
 	}
-	e, err := extractor.NewOIDC(provider.Verifier(&oidc.Config{ClientID: *clientID}), *emailDomain, extractor.Logger(log))
+	e, err := extractor.NewOIDC(provider.Verifier(&oidc.Config{ClientID: *clientID}), extractor.Logger(log), extractor.EmailDomain(*emailDomain))
 	kingpin.FatalIfError(err, "cannot setup OIDC extractor")
 
 	h, err := kuberos.NewHandlers(cfg, e, kuberos.Logger(log))
